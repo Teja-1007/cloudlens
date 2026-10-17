@@ -164,7 +164,32 @@ docker compose up --build
 
 ---
 
-### Option 3: Manual Step-by-Step Setup
+### Option 3: Cloud Deployment (Vercel Frontend + Render Backend)
+
+#### 1. Backend Deployment on Render
+1. Go to [Render Dashboard](https://dashboard.render.com/) and click **New +** > **Blueprint** (or **Web Service**).
+2. Select repository: `https://github.com/Teja-1007/cloudlens`.
+3. Render detects [`render.yaml`](./render.yaml) automatically:
+   - **Root Directory**: `backend`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check**: `/api/ping`
+4. Click **Apply / Deploy**. Once deployed, copy your backend URL (e.g. `https://cloudlens-backend.onrender.com`).
+
+#### 2. Frontend Deployment on Vercel
+1. Go to [Vercel Dashboard](https://vercel.com/new) and import `https://github.com/Teja-1007/cloudlens`.
+2. Configure Project:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. In **Environment Variables**, add:
+   - `VITE_API_URL` = `https://<your-render-backend-name>.onrender.com`
+4. Click **Deploy**. Vercel will build and assign your production domain.
+
+---
+
+### Option 4: Manual Step-by-Step Setup
 
 #### 1. Backend Setup
 ```bash
