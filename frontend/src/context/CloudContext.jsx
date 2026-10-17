@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { api } from "../api";
+import { api, API_URL } from "../api";
 
 const CloudContext = createContext();
 
@@ -13,6 +13,7 @@ export function CloudProvider({ children }) {
   const [incidentDetails, setIncidentDetails] = useState(null);
   const [activeAlertCount, setActiveAlertCount] = useState(0);
   const [incidentLoading, setIncidentLoading] = useState(false);
+  const [backendStatus, setBackendStatus] = useState("checking");
 
   // Apply dark mode class to document element
   useEffect(() => {
@@ -36,6 +37,13 @@ export function CloudProvider({ children }) {
   // Poll incident status and alert count
   const checkStatus = useCallback(async () => {
     try {
+      const pingRes = await api.ping().catch(() => null);
+      if (pingRes && pingRes.status === "ok") {
+        setBackendStatus("connected");
+      } else {
+        setBackendStatus("offline");
+      }
+
       const [incStatus, alerts] = await Promise.all([
         api.getIncidentStatus().catch(() => ({ active: false })),
         api.getAlerts().catch(() => []),
@@ -46,6 +54,7 @@ export function CloudProvider({ children }) {
       setActiveAlertCount(unack.length);
     } catch (err) {
       console.warn("Failed to check background status", err);
+      setBackendStatus("offline");
     }
   }, []);
 
@@ -117,6 +126,8 @@ export function CloudProvider({ children }) {
         incidentDetails,
         activeAlertCount,
         incidentLoading,
+        backendStatus,
+        apiUrl: API_URL,
         simulateIncident: runSimulateIncident,
         resetIncident: runResetIncident,
       }}

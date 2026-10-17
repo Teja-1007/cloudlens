@@ -23,6 +23,8 @@ export default function Topbar() {
     simulateIncident,
     resetIncident,
     incidentLoading,
+    backendStatus,
+    apiUrl,
   } = useCloud();
 
   const providers = [
@@ -82,6 +84,35 @@ export default function Topbar() {
             <span>{incidentLoading ? "Simulating..." : "Simulate Incident"}</span>
           </button>
         )}
+
+        {/* Backend API Connectivity Status Pill */}
+        <div
+          title={backendStatus === "connected" ? `Connected to ${apiUrl}` : `Backend unreachable at ${apiUrl}. If deploying, check Render URL & VITE_API_URL`}
+          className={`hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border ${
+            backendStatus === "connected"
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+              : backendStatus === "checking"
+              ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+              : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+          }`}
+        >
+          <span
+            className={`w-2 h-2 rounded-full ${
+              backendStatus === "connected"
+                ? "bg-emerald-400 animate-pulse"
+                : backendStatus === "checking"
+                ? "bg-amber-400 animate-pulse"
+                : "bg-rose-400"
+            }`}
+          />
+          <span className="hidden md:inline">
+            {backendStatus === "connected"
+              ? "API Online"
+              : backendStatus === "checking"
+              ? "Connecting..."
+              : "API Offline"}
+          </span>
+        </div>
 
         {/* Refresh & Countdown */}
         <div className="flex items-center space-x-2 text-xs text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800">

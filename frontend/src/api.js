@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function fetchJson(endpoint, options = {}) {
   const url = `${API_URL}/api${endpoint}`;
@@ -22,6 +22,7 @@ async function fetchJson(endpoint, options = {}) {
 }
 
 export const api = {
+  ping: () => fetchJson("/ping"),
   getOverview: (provider) => {
     const p = provider && provider !== "all" ? `?provider=${provider}` : "";
     return fetchJson(`/overview${p}`);
